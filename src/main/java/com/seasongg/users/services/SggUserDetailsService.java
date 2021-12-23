@@ -26,7 +26,7 @@ public class SggUserDetailsService implements UserDetailsService {
             throw new UsernameNotFoundException(username);
         }
 
-        return new User(reguser.getUsername(), reguser.getPassword(), new ArrayList<>());
+        return reguser;
     }
 
 }
