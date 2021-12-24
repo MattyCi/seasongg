@@ -1,4 +1,4 @@
-package com.seasongg.users.models;
+package com.seasongg.user.models;
 
 import com.seasongg.common.RestResponse;
 

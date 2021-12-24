@@ -1,4 +1,4 @@
-package com.seasongg.users.models;
+package com.seasongg.user.models;
 
 public class RegistrationRequest {
 

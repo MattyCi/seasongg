@@ -1,16 +1,14 @@
-package com.seasongg.users.services;
+package com.seasongg.user.services;
 
-import com.seasongg.users.Reguser;
-import com.seasongg.users.ReguserRepository;
-import com.seasongg.users.models.RegistrationRequest;
-import com.seasongg.users.models.RegistrationResponse;
-import com.seasongg.users.utils.UserUtils;
+import com.seasongg.user.Reguser;
+import com.seasongg.user.ReguserRepository;
+import com.seasongg.user.models.RegistrationRequest;
+import com.seasongg.user.models.RegistrationResponse;
+import com.seasongg.user.utils.UserUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AnonymousAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;

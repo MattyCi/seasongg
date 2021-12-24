@@ -1,8 +1,8 @@
 package com.seasongg;
 
 import com.seasongg.config.security.util.CryptoUtil;
-import com.seasongg.users.Reguser;
-import com.seasongg.users.services.UserBuilder;
+import com.seasongg.user.Reguser;
+import com.seasongg.user.services.UserBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;

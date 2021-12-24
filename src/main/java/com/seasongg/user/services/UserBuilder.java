@@ -1,13 +1,13 @@
-package com.seasongg.users.services;
+package com.seasongg.user.services;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.seasongg.users.Reguser;
-import com.seasongg.users.ReguserRepository;
-import com.seasongg.users.utils.UserUtils;
+import com.seasongg.user.Reguser;
+import com.seasongg.user.ReguserRepository;
+import com.seasongg.user.utils.UserUtils;
 import org.passay.CharacterRule;
 import org.passay.PasswordData;
 import org.passay.PasswordGenerator;

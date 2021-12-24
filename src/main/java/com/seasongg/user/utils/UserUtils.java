@@ -1,8 +1,8 @@
-package com.seasongg.users.utils;
+package com.seasongg.user.utils;
 
 import java.util.ArrayList;
 
-import com.seasongg.users.Reguser;
+import com.seasongg.user.Reguser;
 import org.passay.CharacterRule;
 import org.passay.EnglishCharacterData;
 import org.passay.LengthRule;

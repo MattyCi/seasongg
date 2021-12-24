@@ -1,11 +1,11 @@
-package com.seasongg.users.controllers;
+package com.seasongg.user.controllers;
 
 import com.seasongg.common.CommonController;
-import com.seasongg.users.models.AuthenticationRequest;
-import com.seasongg.users.models.AuthenticationResponse;
-import com.seasongg.users.models.RegistrationRequest;
+import com.seasongg.user.models.AuthenticationRequest;
+import com.seasongg.user.models.AuthenticationResponse;
+import com.seasongg.user.models.RegistrationRequest;
 import com.seasongg.config.security.util.JwtUtil;
-import com.seasongg.users.services.UserRegisterService;
+import com.seasongg.user.services.UserRegisterService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,4 +1,4 @@
-package com.seasongg.users;
+package com.seasongg.user;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
