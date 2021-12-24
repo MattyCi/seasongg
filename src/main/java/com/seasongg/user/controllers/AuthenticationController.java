@@ -41,7 +41,7 @@ public class AuthenticationController extends CommonController {
         return principal.getName();
     }
 
-    @RequestMapping(value = "/public/login", method = RequestMethod.POST)
+    @RequestMapping(value = PUBLIC_API + "/login", method = RequestMethod.POST)
     public ResponseEntity<?> login(@RequestBody AuthenticationRequest authenticationRequest) {
 
         try {
@@ -62,7 +62,7 @@ public class AuthenticationController extends CommonController {
 
     }
 
-    @RequestMapping(value = "/public/register", method = RequestMethod.POST)
+    @RequestMapping(value = PUBLIC_API + "/register", method = RequestMethod.POST)
     public ResponseEntity<?> register(@RequestBody RegistrationRequest registrationRequest) {
 
         return ResponseEntity.ok(userRegisterService.registerUser(registrationRequest));
