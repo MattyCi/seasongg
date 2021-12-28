@@ -1,10 +1,12 @@
-package com.seasongg.user;
+package com.seasongg.user.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.util.Collection;
 
@@ -17,25 +19,28 @@ public class Reguser implements Serializable, UserDetails {
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     @Column(name="USER_ID")
-    private String userId;
+    private BigInteger userId;
 
     private String username;
 
+    @JsonIgnore
     private String password;
 
     @Column(name="REGISTRATION_TIME")
+    @JsonIgnore
     private Timestamp registrationTime;
 
+    @JsonIgnore
     private String salt;
 
     public Reguser() {
     }
 
-    public String getUserId() {
+    public BigInteger getUserId() {
         return this.userId;
     }
 
-    public void setUserId(String userId) {
+    public void setUserId(BigInteger userId) {
         this.userId = userId;
     }
 
@@ -44,21 +49,25 @@ public class Reguser implements Serializable, UserDetails {
     }
 
     @Override
+    @JsonIgnore
     public boolean isAccountNonExpired() {
         return true;
     }
 
     @Override
+    @JsonIgnore
     public boolean isAccountNonLocked() {
         return true;
     }
 
     @Override
+    @JsonIgnore
     public boolean isCredentialsNonExpired() {
         return true;
     }
 
     @Override
+    @JsonIgnore
     public boolean isEnabled() {
         return true;
     }
@@ -68,6 +77,7 @@ public class Reguser implements Serializable, UserDetails {
     }
 
     @Override
+    @JsonIgnore
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return null;
     }

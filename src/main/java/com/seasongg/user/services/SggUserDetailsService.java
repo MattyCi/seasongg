@@ -1,7 +1,6 @@
 package com.seasongg.user.services;
 
-import com.seasongg.user.Reguser;
-import com.seasongg.user.ReguserRepository;
+import com.seasongg.user.models.Reguser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

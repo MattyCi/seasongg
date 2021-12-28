@@ -5,8 +5,7 @@ import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.seasongg.user.Reguser;
-import com.seasongg.user.ReguserRepository;
+import com.seasongg.user.models.Reguser;
 import com.seasongg.user.utils.UserUtils;
 import org.passay.CharacterRule;
 import org.passay.PasswordData;

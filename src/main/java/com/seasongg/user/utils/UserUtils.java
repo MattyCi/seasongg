@@ -2,7 +2,7 @@ package com.seasongg.user.utils;
 
 import java.util.ArrayList;
 
-import com.seasongg.user.Reguser;
+import com.seasongg.user.models.Reguser;
 import org.passay.CharacterRule;
 import org.passay.EnglishCharacterData;
 import org.passay.LengthRule;

@@ -1,7 +1,7 @@
 package com.seasongg.user.services;
 
-import com.seasongg.user.Reguser;
-import com.seasongg.user.ReguserRepository;
+import com.seasongg.common.SggService;
+import com.seasongg.user.models.Reguser;
 import com.seasongg.user.models.RegistrationRequest;
 import com.seasongg.user.models.RegistrationResponse;
 import com.seasongg.user.utils.UserUtils;
@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 import java.sql.Timestamp;
 
 @Service
-public class UserRegisterService {
+public class UserRegisterService extends SggService {
 
     @Autowired
     private ReguserRepository reguserRepository;
@@ -28,7 +28,6 @@ public class UserRegisterService {
     private final Logger LOG = LoggerFactory.getLogger(UserRegisterService.class);
 
     public static final String ERROR_ALREADY_AUTHENTICATED = "Please log out before trying to register a new account.";
-    public static final String UNKNOWN_REGISTRATION_ERROR = "Sorry, something went wrong on our end. Please try again.";
 
     public RegistrationResponse registerUser(RegistrationRequest registrationRequest) {
 
@@ -58,7 +57,7 @@ public class UserRegisterService {
             LOG.error("Unexpected error when user tried creating account with username: {}.",
                     registrationRequest.getUsername(), e);
 
-            return new RegistrationResponse(7, UNKNOWN_REGISTRATION_ERROR);
+            return new RegistrationResponse(7, UNKNOWN_ERROR_TEXT);
 
         }
 

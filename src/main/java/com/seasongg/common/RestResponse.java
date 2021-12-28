@@ -1,12 +1,14 @@
 package com.seasongg.common;
 
+import static com.seasongg.common.SggService.SUCCESS;
+
 public class RestResponse {
 
     private int status;
     private String errorMessage;
 
     public RestResponse() {
-        this.status = 0;
+        this.status = SUCCESS;
         this.errorMessage = null;
     }
 
