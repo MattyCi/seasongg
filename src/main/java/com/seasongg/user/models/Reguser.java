@@ -1,14 +1,18 @@
 package com.seasongg.user.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.seasongg.user.models.permissions.UserPermission;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.math.BigInteger;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 @Entity
 @Table(name="regusers")
@@ -32,6 +36,9 @@ public class Reguser implements Serializable, UserDetails {
 
     @JsonIgnore
     private String salt;
+
+    @OneToMany(mappedBy="reguser")
+    private List<UserPermission> userPermissions;
 
     public Reguser() {
     }
@@ -79,7 +86,15 @@ public class Reguser implements Serializable, UserDetails {
     @Override
     @JsonIgnore
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
+
+        List<UserPermission> userPermissions = getUserPermissions();
+        List<SimpleGrantedAuthority> authorities = new ArrayList<>();
+
+        for (UserPermission userPermission : userPermissions) {
+            authorities.add(new SimpleGrantedAuthority(userPermission.getPermission().getPermValue()));
+        }
+
+        return authorities;
     }
 
     public String getPassword() {
@@ -104,6 +119,28 @@ public class Reguser implements Serializable, UserDetails {
 
     public void setSalt(String salt) {
         this.salt = salt;
+    }
+
+    public List<UserPermission> getUserPermissions() {
+        return this.userPermissions;
+    }
+
+    public void setUserPermissions(List<UserPermission> userPermissions) {
+        this.userPermissions = userPermissions;
+    }
+
+    public UserPermission addUserPermission(UserPermission userPermission) {
+        getUserPermissions().add(userPermission);
+        userPermission.setReguser(this);
+
+        return userPermission;
+    }
+
+    public UserPermission removeRound(UserPermission userPermission) {
+        getUserPermissions().remove(userPermission);
+        userPermission.setReguser(null);
+
+        return userPermission;
     }
 
 }

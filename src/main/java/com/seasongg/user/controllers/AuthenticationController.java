@@ -36,9 +36,9 @@ public class AuthenticationController extends CommonController {
 
     private final Logger LOG = LoggerFactory.getLogger(AuthenticationController.class);
 
-    @RequestMapping({ "/get-user" })
-    public String firstPage(Principal principal) {
-        return principal.getName();
+    @RequestMapping({ "/get-user-permissions" })
+    public String firstPage(Authentication authentication) {
+        return authentication.getAuthorities().toString();
     }
 
     @RequestMapping(value = PUBLIC_API + "/login", method = RequestMethod.POST)
