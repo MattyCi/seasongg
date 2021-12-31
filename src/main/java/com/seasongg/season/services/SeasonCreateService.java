@@ -8,11 +8,16 @@ import com.seasongg.season.models.Season;
 import com.seasongg.season.models.SeasonCreateRequest;
 import com.seasongg.season.models.SeasonCreateResponse;
 import com.seasongg.season.models.SeasonStatus;
+import com.seasongg.user.models.permissions.Permission;
+import com.seasongg.user.models.permissions.UserPermission;
+import com.seasongg.user.services.permissions.PermissionRepository;
+import com.seasongg.user.services.permissions.UserPermissionRepository;
 import org.hibernate.exception.ConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
 import java.text.ParseException;
@@ -30,6 +35,12 @@ public class SeasonCreateService extends SggService {
     GameRepository gameRepository;
 
     @Autowired
+    PermissionRepository permissionRepository;
+
+    @Autowired
+    UserPermissionRepository userPermissionRepository;
+
+    @Autowired
     GameCreationService gameCreationService;
 
     private final Logger LOG = LoggerFactory.getLogger(SeasonCreateService.class);
@@ -42,9 +53,6 @@ public class SeasonCreateService extends SggService {
     private static final String SEASON_NAME_EXISTS_ERROR_TEXT = "Sorry, but the season name you provided " +
             "already exists.";
 
-    private static final String NO_GAME_SELECTED_ERROR_TEXT = "Please select a game to be played " +
-            "throughout the season.";
-
     private static final String INVALID_END_DATE_ERROR_TEXT = "The season end date provided was invalid, please "
             + "choose a valid date with the format mm/dd/yyyy and try again.";
     private static final String END_DATE_BEFORE_START_ERROR_TEXT = "Please choose a date in the future for your " +
@@ -52,12 +60,14 @@ public class SeasonCreateService extends SggService {
 
     public static final String SCORING_TYPE_EMPTY = "Please provide a season scoring type.";
 
+    private static final String NO_GAME_SELECTED_ERROR_TEXT = "Please select a game to be played " +
+            "throughout the season.";
     private static final String UNEXPECTED_GAME_ERROR = "Sorry, we had an issue finding the selected game. " +
             "Please try again.";
 
-    public SeasonCreateResponse createSeason(SeasonCreateRequest seasonCreateRequest) {
+    @Transactional(rollbackFor = Exception.class)
+    public SeasonCreateResponse createSeason(SeasonCreateRequest seasonCreateRequest) throws Exception {
 
-        try {
             validateSeasonName(seasonCreateRequest.getSeasonName());
             validateSeasonDates(seasonCreateRequest.getSeasonEndDate());
             validateGameId(seasonCreateRequest.getSeasonGameId());
@@ -65,26 +75,6 @@ public class SeasonCreateService extends SggService {
             Season season = buildSeason(seasonCreateRequest);
 
             return new SeasonCreateResponse(season);
-
-            /*return new SeasonCreateResponse.Builder()
-                    .id(season.getSeasonId())
-                    .name(season.getName())
-                    .seasonStatus(season.getStatus())
-                    .scoringType(season.getScoringType())
-                    .startDate(season.getStartDate())
-                    .endDate(season.getEndDate())
-                    .creator(season.getCreator().getUsername())
-                    .gameId(season.getGame().getGameId())
-                    .gameName(season.getGame().getGameName())
-                    .build();*/
-
-        } catch (SggServiceException e) {
-            return new SeasonCreateResponse(APPLICATION_ERROR, e.getMessage());
-        } catch (Exception e) {
-            LOG.error("Unexpected error when creating season.", e);
-            return new SeasonCreateResponse(UNKNOWN_ERROR, UNKNOWN_ERROR_TEXT);
-        }
-
     }
 
     private void validateSeasonName(String seasonName) throws SeasonCreateException {
@@ -147,7 +137,8 @@ public class SeasonCreateService extends SggService {
 
     }
 
-    private Season buildSeason(SeasonCreateRequest seasonCreateRequest) throws SggServiceException, ParseException {
+
+    public Season buildSeason(SeasonCreateRequest seasonCreateRequest) throws Exception {
 
         Optional<Game> bggGame = gameRepository.findById(seasonCreateRequest.getSeasonGameId());
 
@@ -188,7 +179,40 @@ public class SeasonCreateService extends SggService {
             throw e;
         }
 
+        try {
+            assignUserPermissionsForSeason(season);
+        } catch (Exception e) {
+            LOG.error("Unexpected error occurred when assigning new season admin permissions.", e);
+            throw e;
+        }
+
         return season;
+    }
+
+    private void assignUserPermissionsForSeason(Season season) {
+
+        Permission permission = createPermission(season);
+        associateUserToPermission(season, permission);
+
+    }
+
+    private Permission createPermission(Season season) {
+        Permission permission;
+        permission = new Permission();
+        permission.setPermValue("season:*:"+season.getSeasonId());
+        permissionRepository.save(permission);
+        return permission;
+    }
+
+    private void associateUserToPermission(Season season, Permission permission) {
+
+        LOG.debug("granting user {} admin rights for season {}.", getUsername(), season.getSeasonId());
+
+        UserPermission userPermission = new UserPermission();
+        userPermission.setPermission(permission);
+        userPermission.setReguser(season.getCreator());
+        userPermissionRepository.save(userPermission);
+
     }
 
     public static class SeasonCreateException extends SggServiceException {

@@ -9,8 +9,8 @@ import org.springframework.stereotype.Service;
 public class SggService {
 
     protected static final int SUCCESS = 0;
-    protected static final int APPLICATION_ERROR = 1;
-    protected static final int UNKNOWN_ERROR = 7;
+    public static final int APPLICATION_ERROR = 1;
+    public static final int UNKNOWN_ERROR = 7;
 
     public static final String UNKNOWN_ERROR_TEXT = "Sorry, something went wrong on our end. Please try again.";
     private static final String NOT_AUTHENTICATED_ERROR = "Sorry, you must be logged in to perform this action";
@@ -19,7 +19,7 @@ public class SggService {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         if (principal instanceof UserDetails) {
-            return ((UserDetails)principal).getUsername();
+            return ((UserDetails) principal).getUsername();
         } else {
             return principal.toString();
         }
