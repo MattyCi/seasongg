@@ -38,6 +38,7 @@ public class Reguser implements Serializable, UserDetails {
     private String salt;
 
     @OneToMany(mappedBy="reguser")
+    @JsonIgnore
     private List<UserPermission> userPermissions;
 
     public Reguser() {

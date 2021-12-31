@@ -10,23 +10,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.*;
-
-import java.security.Principal;
 
 @RestController
 public class AuthenticationController extends CommonController {
 
     @Autowired
     private AuthenticationManager authenticationManager;
-
-    @Autowired
-    private UserDetailsService userDetailsService;
 
     @Autowired
     private JwtUtil jwtUtil;
@@ -37,8 +32,9 @@ public class AuthenticationController extends CommonController {
     private final Logger LOG = LoggerFactory.getLogger(AuthenticationController.class);
 
     @RequestMapping({ "/get-user-permissions" })
-    public String firstPage(Authentication authentication) {
-        return authentication.getAuthorities().toString();
+    @PreAuthorize("@sggAuthorizationResolver.hasAuthority('test:getauthorities:' + #testRequest.getUsername())")
+    public String getUserPermissions(@RequestBody AuthenticationRequest testRequest, Authentication authentication) {
+       return authentication.getAuthorities().toString();
     }
 
     @RequestMapping(value = PUBLIC_API + "/login", method = RequestMethod.POST)
