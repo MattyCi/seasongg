@@ -2,16 +2,16 @@ package com.seasongg.season.models;
 
 import com.seasongg.common.RestResponse;
 
-public class SeasonCreateResponse extends RestResponse {
+public class SeasonResponse extends RestResponse {
 
     private Season season;
 
-    public SeasonCreateResponse(Season season) {
+    public SeasonResponse(Season season) {
         super();
         this.season = season;
     }
 
-    public SeasonCreateResponse(int status, String errorMessage) {
+    public SeasonResponse(int status, String errorMessage) {
         super(status, errorMessage);
     }
 

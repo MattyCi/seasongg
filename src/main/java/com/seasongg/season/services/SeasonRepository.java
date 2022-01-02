@@ -7,4 +7,6 @@ import java.math.BigInteger;
 
 public interface SeasonRepository extends CrudRepository<Season, BigInteger> {
 
+    Season findByNameIgnoreCase(String name);
+
 }

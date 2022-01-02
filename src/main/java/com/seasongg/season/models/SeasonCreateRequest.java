@@ -60,4 +60,15 @@ public class SeasonCreateRequest {
         this.seasonScoringType = seasonScoringType;
     }
 
+    @Override
+    public String toString() {
+        return "SeasonCreateRequest{" +
+                "seasonName='" + seasonName + '\'' +
+                ", seasonGameId=" + seasonGameId +
+                ", seasonGameName='" + seasonGameName + '\'' +
+                ", seasonEndDate='" + seasonEndDate + '\'' +
+                ", seasonScoringType='" + seasonScoringType + '\'' +
+                '}';
+    }
+
 }
