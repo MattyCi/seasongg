@@ -16,8 +16,6 @@ import java.util.Optional;
 public class SeasonEditService extends SeasonService {
 
     private final Logger LOG = LoggerFactory.getLogger(SeasonEditService.class);
-
-    private static final String SEASON_NOT_FOUND = "No season found for the given seasonId";
     private static final String NO_EDITS = "No changes were provided, so the season was not edited.";
 
     @Transactional(rollbackFor = Exception.class)
@@ -25,7 +23,7 @@ public class SeasonEditService extends SeasonService {
 
         validateSeasonId(seasonEditRequest.getSeasonId());
 
-        Season seasonToEdit = getSeasonToEdit(seasonEditRequest.getSeasonId());
+        Season seasonToEdit = findSeason(seasonEditRequest.getSeasonId());
 
         boolean editsOccurred = false;
 
@@ -45,16 +43,6 @@ public class SeasonEditService extends SeasonService {
             throw new SeasonException(NO_EDITS);
         }
 
-    }
-
-    private Season getSeasonToEdit(BigInteger seasonId) throws SeasonException {
-        Optional<Season> optionalSeason = seasonRepository.findById(seasonId);
-
-        if (optionalSeason.isPresent()) {
-            return optionalSeason.get();
-        } else {
-            throw new SeasonException(SEASON_NOT_FOUND);
-        }
     }
 
     private void changeSeasonEndDate(Season seasonToEdit, String endDate) throws SeasonException {

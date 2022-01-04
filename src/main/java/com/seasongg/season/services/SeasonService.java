@@ -1,6 +1,7 @@
 package com.seasongg.season.services;
 
 import com.seasongg.common.SggService;
+import com.seasongg.season.models.Season;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,7 @@ import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Optional;
 
 @Service
 public class SeasonService extends SggService {
@@ -22,7 +24,8 @@ public class SeasonService extends SggService {
 
     private static final String SEASON_DATE_FORMAT = "MM/dd/yyyy";
 
-    private static final String NO_SEASON_SELECTED = "No season was provided to be edited.";
+    private static final String NO_SEASON_SELECTED = "No season was provided to be modified.";
+    private static final String SEASON_NOT_FOUND = "No season found for the given seasonId.";
     private static final String SEASON_NAME_TOO_SHORT_ERROR_TEXT = "Season names must be at least 4 characters long.";
     private static final String SEASON_NAME_TOO_LONG_ERROR_TEXT = "Season names cannot be more than 56 " +
             "characters long.";
@@ -112,6 +115,20 @@ public class SeasonService extends SggService {
             throw new SeasonException(NO_GAME_SELECTED_ERROR_TEXT);
         }
 
+    }
+
+    /**
+     * @return a season entity for the given seasonId
+     * @throws SeasonException if no season is found
+     */
+    Season findSeason(BigInteger seasonId) throws SeasonException {
+        Optional<Season> optionalSeason = seasonRepository.findById(seasonId);
+
+        if (optionalSeason.isPresent()) {
+            return optionalSeason.get();
+        } else {
+            throw new SeasonException(SEASON_NOT_FOUND);
+        }
     }
 
     public static class SeasonException extends SggServiceException {

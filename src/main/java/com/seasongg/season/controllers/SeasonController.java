@@ -6,6 +6,7 @@ import com.seasongg.season.models.SeasonCreateRequest;
 import com.seasongg.season.models.SeasonResponse;
 import com.seasongg.season.models.SeasonEditRequest;
 import com.seasongg.season.services.SeasonCreateService;
+import com.seasongg.season.services.SeasonDeleteService;
 import com.seasongg.season.services.SeasonEditService;
 
 import org.slf4j.Logger;
@@ -14,10 +15,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.math.BigInteger;
 
 @RestController
 public class SeasonController extends CommonController {
@@ -27,6 +27,9 @@ public class SeasonController extends CommonController {
 
     @Autowired
     SeasonEditService seasonEditService;
+
+    @Autowired
+    SeasonDeleteService seasonDeleteService;
 
     private final Logger LOG = LoggerFactory.getLogger(SeasonController.class);
     private static final String SEASON_API = "/season";
@@ -58,6 +61,23 @@ public class SeasonController extends CommonController {
                     HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
             LOG.error("Unexpected error during season edit with request object: {}.", seasonEditRequest.toString(), e);
+            return new ResponseEntity<>(new SeasonResponse(SggService.UNKNOWN_ERROR,
+                    SggService.UNKNOWN_ERROR_TEXT), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+    }
+
+    @RequestMapping(value = SEASON_API + "/delete/{seasonId}", method = RequestMethod.DELETE)
+    @PreAuthorize("@sggAuthorizationResolver.hasAuthority('season:deleteseason:' + #seasonId)")
+    public ResponseEntity<?> deleteSeason(@PathVariable BigInteger seasonId) {
+
+        try {
+            return ResponseEntity.ok(seasonDeleteService.deleteSeason(seasonId));
+        } catch (SggService.SggServiceException e) {
+            return new ResponseEntity<>(new SeasonResponse(SggService.APPLICATION_ERROR, e.getMessage()),
+                    HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            LOG.error("Unexpected error when deleting seasonId {}.", seasonId, e);
             return new ResponseEntity<>(new SeasonResponse(SggService.UNKNOWN_ERROR,
                     SggService.UNKNOWN_ERROR_TEXT), HttpStatus.INTERNAL_SERVER_ERROR);
         }
