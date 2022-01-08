@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
 
@@ -29,10 +30,11 @@ public class UserRegisterService extends SggService {
 
     public static final String ERROR_ALREADY_AUTHENTICATED = "Please log out before trying to register a new account.";
 
-    public RegistrationResponse registerUser(RegistrationRequest registrationRequest) {
+    @Transactional
+    public RegistrationResponse registerUser(RegistrationRequest registrationRequest) throws RegistrationException {
 
         if (userUtils.isUserAuthenticated()) {
-            return new RegistrationResponse(1, ERROR_ALREADY_AUTHENTICATED);
+            throw new RegistrationException(ERROR_ALREADY_AUTHENTICATED);
         }
 
         Reguser regUser = new Reguser();
@@ -50,14 +52,7 @@ public class UserRegisterService extends SggService {
             LOG.info("Error when user tried creating account with username: {}. Error is: {}",
                     registrationRequest.getUsername(), e.getMessage());
 
-            return new RegistrationResponse(1, e.getMessage());
-
-        } catch (Exception e) {
-
-            LOG.error("Unexpected error when user tried creating account with username: {}.",
-                    registrationRequest.getUsername(), e);
-
-            return new RegistrationResponse(7, UNKNOWN_ERROR_TEXT);
+            throw new RegistrationException(e.getMessage());
 
         }
 
@@ -69,6 +64,12 @@ public class UserRegisterService extends SggService {
 
         return new RegistrationResponse(regUser.getUsername());
 
+    }
+
+    public static class RegistrationException extends SggServiceException {
+        public RegistrationException(String message) {
+            super(message);
+        }
     }
 
 }
