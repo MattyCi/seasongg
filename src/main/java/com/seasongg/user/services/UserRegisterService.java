@@ -30,7 +30,7 @@ public class UserRegisterService extends SggService {
 
     public static final String ERROR_ALREADY_AUTHENTICATED = "Please log out before trying to register a new account.";
 
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public RegistrationResponse registerUser(RegistrationRequest registrationRequest) throws RegistrationException {
 
         if (userUtils.isUserAuthenticated()) {
