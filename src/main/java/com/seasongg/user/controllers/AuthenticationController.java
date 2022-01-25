@@ -34,6 +34,11 @@ public class AuthenticationController extends CommonController {
         } catch (BadCredentialsException e) {
             LOG.info("Failed login attempt from user {}", authenticationRequest.getUsername());
             throw e;
+        } catch (Exception e) {
+            LOG.error("Unexpected error when user tried logging in with username: {}.",
+                    authenticationRequest.getUsername(), e);
+            return new ResponseEntity<>(new SeasonResponse(SggService.UNKNOWN_ERROR,
+                    SggService.UNKNOWN_ERROR_TEXT), HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
     }
