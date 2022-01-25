@@ -1,5 +1,7 @@
 package com.seasongg.common;
 
+import java.util.Objects;
+
 import static com.seasongg.common.SggService.SUCCESS;
 
 public class RestResponse {
@@ -31,6 +33,19 @@ public class RestResponse {
 
     public void setErrorMessage(String errorMessage) {
         this.errorMessage = errorMessage;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        RestResponse that = (RestResponse) o;
+        return status == that.status && Objects.equals(errorMessage, that.errorMessage);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(status, errorMessage);
     }
 
 }
