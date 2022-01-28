@@ -28,7 +28,7 @@ public class UserRegisterService extends SggService {
 
     private final Logger LOG = LoggerFactory.getLogger(UserRegisterService.class);
 
-    public static final String ERROR_ALREADY_AUTHENTICATED = "Please log out before trying to register a new account.";
+    private static final String ERROR_ALREADY_AUTHENTICATED = "Please log out before trying to register a new account.";
 
     @Transactional(rollbackFor = Exception.class)
     public RegistrationResponse registerUser(RegistrationRequest registrationRequest) throws RegistrationException {
@@ -37,11 +37,10 @@ public class UserRegisterService extends SggService {
             throw new RegistrationException(ERROR_ALREADY_AUTHENTICATED);
         }
 
-        Reguser regUser = new Reguser();
+		// TODO: refactor UserBuilder into a proper builder pattern / service to make unit testing easier
+		UserBuilder userBuilder = userBuilders.getObject(new Reguser());
 
         try {
-
-            UserBuilder userBuilder = userBuilders.getObject(regUser);
 
             userBuilder.buildUsername(registrationRequest.getUsername());
 
@@ -58,11 +57,11 @@ public class UserRegisterService extends SggService {
 
         Timestamp registrationTime = new Timestamp(System.currentTimeMillis());
 
-        regUser.setRegistrationTime(registrationTime);
+		userBuilder.getReguser().setRegistrationTime(registrationTime);
 
-        reguserRepository.save(regUser);
+        reguserRepository.save(userBuilder.getReguser());
 
-        return new RegistrationResponse(regUser.getUsername());
+        return new RegistrationResponse(userBuilder.getReguser().getUsername());
 
     }
 

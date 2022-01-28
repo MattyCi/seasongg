@@ -13,6 +13,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Table(name="regusers")
@@ -143,5 +144,18 @@ public class Reguser implements Serializable, UserDetails {
 
         return userPermission;
     }
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		Reguser reguser = (Reguser) o;
+		return Objects.equals(userId, reguser.userId) && Objects.equals(username, reguser.username) && Objects.equals(password, reguser.password) && Objects.equals(registrationTime, reguser.registrationTime) && Objects.equals(salt, reguser.salt) && Objects.equals(userPermissions, reguser.userPermissions);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(userId, username, password, registrationTime, salt, userPermissions);
+	}
 
 }
