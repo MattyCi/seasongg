@@ -4,15 +4,15 @@ import com.seasongg.common.SggService;
 import com.seasongg.user.models.Reguser;
 import com.seasongg.user.models.RegistrationRequest;
 import com.seasongg.user.models.RegistrationResponse;
+import com.seasongg.user.models.UserBuilder;
 import com.seasongg.user.utils.UserUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.sql.Timestamp;
 
 @Service
 public class UserRegisterService extends SggService {
@@ -37,31 +37,30 @@ public class UserRegisterService extends SggService {
             throw new RegistrationException(ERROR_ALREADY_AUTHENTICATED);
         }
 
-		// TODO: refactor UserBuilder into a proper builder pattern / service to make unit testing easier
-		UserBuilder userBuilder = userBuilders.getObject(new Reguser());
+		Reguser reguser;
 
         try {
 
-            userBuilder.buildUsername(registrationRequest.getUsername());
+			reguser = userBuilders.getObject(
+				registrationRequest.getUsername(),
+				registrationRequest.getPassword(),
+				registrationRequest.getPasswordVerify()
+			).build();
 
-            userBuilder.buildPassword(registrationRequest.getPassword(), registrationRequest.getPasswordVerify());
+        } catch (BeanCreationException e) {
 
-        } catch (UserBuilder.UserBuilderException e) {
-
-            LOG.info("Error when user tried creating account with username: {}. Error is: {}",
-                    registrationRequest.getUsername(), e.getMessage());
-
-            throw new RegistrationException(e.getMessage());
+			if (e.getCause() instanceof IllegalArgumentException) {
+				LOG.info("Error when user tried creating account with username: {}. Error is: {}",
+						registrationRequest.getUsername(), e.getMessage());
+				throw new RegistrationException(e.getCause().getMessage());
+			}
+			throw e;
 
         }
 
-        Timestamp registrationTime = new Timestamp(System.currentTimeMillis());
+        reguserRepository.save(reguser);
 
-		userBuilder.getReguser().setRegistrationTime(registrationTime);
-
-        reguserRepository.save(userBuilder.getReguser());
-
-        return new RegistrationResponse(userBuilder.getReguser().getUsername());
+        return new RegistrationResponse(reguser.getUsername());
 
     }
 

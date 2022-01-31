@@ -2,12 +2,7 @@ package com.seasongg.user.utils;
 
 import java.util.ArrayList;
 
-import com.seasongg.user.models.Reguser;
-import org.passay.CharacterRule;
-import org.passay.EnglishCharacterData;
-import org.passay.LengthRule;
-import org.passay.PasswordValidator;
-import org.passay.WhitespaceRule;
+import org.passay.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -51,14 +46,24 @@ public class UserUtils {
 
 	}
 
-	public void encodeAndSetPassword(Reguser user, String plainTextPassword) {
-		user.setPassword(passwordEncoder.encode(plainTextPassword));
+	public String hashPassword(String plainTextPassword) {
+		return passwordEncoder.encode(plainTextPassword);
 	}
 
 	public boolean isUserAuthenticated() {
 		return SecurityContextHolder.getContext().getAuthentication() != null &&
 				SecurityContextHolder.getContext().getAuthentication().isAuthenticated() &&
 				!(SecurityContextHolder.getContext().getAuthentication() instanceof AnonymousAuthenticationToken);
+	}
+
+	public String generateRandomPassword() {
+
+		PasswordGenerator pwGenerator = new PasswordGenerator();
+
+		ArrayList<CharacterRule> charRules = UserUtils.getPwCharacterRules();
+
+		return pwGenerator.generatePassword(UserUtils.pwMax, charRules);
+
 	}
 	
 }

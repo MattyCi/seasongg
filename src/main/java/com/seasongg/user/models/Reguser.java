@@ -45,6 +45,12 @@ public class Reguser implements Serializable, UserDetails {
     public Reguser() {
     }
 
+	protected Reguser(UserBuilder builder) {
+		this.username = builder.getUsername();
+		this.password = builder.getPassword();
+		this.registrationTime = builder.getRegistrationTime();
+	}
+
     public BigInteger getUserId() {
         return this.userId;
     }

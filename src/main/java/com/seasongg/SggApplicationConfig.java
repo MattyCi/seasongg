@@ -1,8 +1,7 @@
 package com.seasongg;
 
 import com.seasongg.config.security.util.CryptoUtil;
-import com.seasongg.user.models.Reguser;
-import com.seasongg.user.services.UserBuilder;
+import com.seasongg.user.models.UserBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -42,8 +41,8 @@ public class SggApplicationConfig {
 
     @Bean
     @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-    public UserBuilder userBuilder(Reguser regUser) throws UserBuilder.UserBuilderException {
-        return new UserBuilder(regUser);
+    public UserBuilder userBuilder(String username, String password, String passwordVerify) {
+        return new UserBuilder(username, password, passwordVerify);
     }
 
     @Bean
