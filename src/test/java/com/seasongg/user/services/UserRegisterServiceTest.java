@@ -1,17 +1,16 @@
 package com.seasongg.user.services;
 
-import com.seasongg.user.models.RegistrationRequest;
-import com.seasongg.user.models.RegistrationResponse;
-import com.seasongg.user.models.Reguser;
-import com.seasongg.user.models.UserBuilder;
+import com.seasongg.user.models.*;
 import com.seasongg.user.utils.UserUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.function.Executable;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.ObjectProvider;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -59,7 +58,7 @@ class UserRegisterServiceTest {
 		// when
 		RegistrationResponse actual = userRegisterService.registerUser(registrationRequest);
 
-		//then
+		// then
 		then(userBuilderMock).should(times(1)).build();
 		then(reguserRepositoryMock).should(times(1)).save(regUserArgumentCaptor.capture());
 		Reguser capturedReguser = regUserArgumentCaptor.getValue();
@@ -72,6 +71,88 @@ class UserRegisterServiceTest {
 		UserBuilder userBuilderMock = mock(UserBuilder.class);
 		when(userBuilderMock.build()).thenReturn(expectedReguser);
 		return userBuilderMock;
+	}
+
+	@Test
+	void should_ThrowException_When_UserAlreadyLoggedIn() {
+		// given
+		RegistrationRequest registrationRequest = new RegistrationRequest(
+				"test-user", "test-password", "test-password");
+		given(userUtilsMock.isUserAuthenticated()).willReturn(true);
+
+		// when
+		Executable executable = () -> userRegisterService.registerUser(registrationRequest);
+
+		// then
+		assertThrows(UserRegisterService.RegistrationException.class, executable);
+		then(reguserRepositoryMock).shouldHaveNoInteractions();
+
+	}
+
+	@Test
+	void should_ThrowException_When_InputBad() {
+		// given
+		RegistrationRequest registrationRequest = new RegistrationRequest(
+				"existing-user", "test-password", "wrong-password");
+		given(userUtilsMock.isUserAuthenticated()).willReturn(false);
+
+		given(
+				userBuildersMock.getObject(registrationRequest.getUsername(),
+						registrationRequest.getPassword(),
+						registrationRequest.getPasswordVerify())
+		).willThrow(new BeanCreationException("test-msg", new IllegalArgumentException()));
+
+		// when
+		Executable executable = () -> userRegisterService.registerUser(registrationRequest);
+
+		// then
+		assertThrows(UserRegisterService.RegistrationException.class, executable);
+		then(reguserRepositoryMock).shouldHaveNoInteractions();
+
+	}
+
+	@Test
+	void should_ThrowException_When_BeanCreationExceptionOccurs() {
+		// given
+		RegistrationRequest registrationRequest = new RegistrationRequest(
+				"existing-user", "test-password", "wrong-password");
+		given(userUtilsMock.isUserAuthenticated()).willReturn(false);
+
+		given(
+				userBuildersMock.getObject(registrationRequest.getUsername(),
+						registrationRequest.getPassword(),
+						registrationRequest.getPasswordVerify())
+		).willThrow(BeanCreationException.class);
+
+		// when
+		Executable executable = () -> userRegisterService.registerUser(registrationRequest);
+
+		// then
+		assertThrows(BeanCreationException.class, executable);
+		then(reguserRepositoryMock).shouldHaveNoInteractions();
+
+	}
+
+	@Test
+	void should_ThrowException_When_UnexpectedExceptionOccurs() {
+		// given
+		RegistrationRequest registrationRequest = new RegistrationRequest(
+				"existing-user", "test-password", "wrong-password");
+		given(userUtilsMock.isUserAuthenticated()).willReturn(false);
+
+		given(
+				userBuildersMock.getObject(registrationRequest.getUsername(),
+						registrationRequest.getPassword(),
+						registrationRequest.getPasswordVerify())
+		).willThrow(ArrayIndexOutOfBoundsException.class);
+
+		// when
+		Executable executable = () -> userRegisterService.registerUser(registrationRequest);
+
+		// then
+		assertThrows(ArrayIndexOutOfBoundsException.class, executable);
+		then(reguserRepositoryMock).shouldHaveNoInteractions();
+
 	}
 
 }
