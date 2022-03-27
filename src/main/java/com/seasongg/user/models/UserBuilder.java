@@ -24,10 +24,10 @@ public class UserBuilder implements InitializingBean {
 	private final String passwordVerify;
 	private Timestamp registrationTime;
 
-	private static final String EMPTY_USERNAME_ERROR_TEXT = "No username was provided.";
-	private static final String INVALID_USERNAME_ERROR_TEXT = "Your username can only contain alphanumeric characters.";
-	private static final String USERNAME_TOO_LONG_ERROR_TEXT = "The username provided was too long.";
-	private static final String USERNAME_ALREADY_EXISTS_ERROR_TEXT = "The username provided is already in use.";
+	public static final String EMPTY_USERNAME_ERROR_TEXT = "No username was provided.";
+	public static final String INVALID_USERNAME_ERROR_TEXT = "Your username can only contain alphanumeric characters.";
+	public static final String USERNAME_TOO_LONG_ERROR_TEXT = "The username provided was too long.";
+	public static final String USERNAME_ALREADY_EXISTS_ERROR_TEXT = "The username provided is already in use.";
 
 	public static final String EMPTY_PASSWORD_ERROR_TEXT = "One of the provided passwords was empty.";
 	public static final String PASSWORD_MISMATCH_ERROR_TEXT = "The passwords provided do not match.";
@@ -45,7 +45,7 @@ public class UserBuilder implements InitializingBean {
 		this.registrationTime = new Timestamp(System.currentTimeMillis());
 	}
 
-	private void username(String username) throws IllegalArgumentException {
+	public void username(String username) throws IllegalArgumentException {
 
 		if (username == null || username.trim().isEmpty())
 			throw new IllegalArgumentException(EMPTY_USERNAME_ERROR_TEXT);
@@ -70,7 +70,7 @@ public class UserBuilder implements InitializingBean {
 
 	}
 
-	private void password(String password, String passwordVerify) throws IllegalArgumentException {
+	public void password(String password, String passwordVerify) throws IllegalArgumentException {
 
 		if (password == null || passwordVerify == null || password.trim().isEmpty() || passwordVerify.trim().isEmpty())
 			throw new IllegalArgumentException(EMPTY_PASSWORD_ERROR_TEXT);
@@ -103,6 +103,16 @@ public class UserBuilder implements InitializingBean {
 
 	public Timestamp getRegistrationTime() {
 		return registrationTime;
+	}
+
+	/** Needed for unit testing only. */
+	public void setReguserRepository(ReguserRepository reguserRepository) {
+		this.reguserRepository = reguserRepository;
+	}
+
+	/** Needed for unit testing only. */
+	public void setUserUtils(UserUtils userUtils) {
+		this.userUtils = userUtils;
 	}
 
 }
