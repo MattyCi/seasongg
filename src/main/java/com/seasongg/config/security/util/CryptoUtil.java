@@ -2,8 +2,12 @@ package com.seasongg.config.security.util;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
+import org.springframework.boot.SpringApplication;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.*;
@@ -13,7 +17,7 @@ import java.security.*;
 import java.util.Base64;
 
 @Service
-public class CryptoUtil {
+public class CryptoUtil implements ApplicationContextAware {
 
     @Autowired
     private ApplicationArguments applicationArguments;
@@ -22,9 +26,12 @@ public class CryptoUtil {
     private static final String CIPHER_TRANSFORMATION = "AES/CBC/PKCS5PADDING";
 
     private static final Logger LOG = LoggerFactory.getLogger(CryptoUtil.class);
+	private static final String SGG_KEY_MISSING = "Application decryption key missing. Shutting down.";
     private static final String UNEXPECTED_ERROR = "Unexpected error occurred during encryption/decryption.";
 
-    public String encrypt(String plaintext) {
+	private ApplicationContext applicationContext;
+
+	public String encrypt(String plaintext) {
 
         try {
 
@@ -87,7 +94,24 @@ public class CryptoUtil {
     }
 
     private String getSggKey() {
-        return applicationArguments.getSourceArgs()[0];
+
+		String[] applicationArgs = applicationArguments.getSourceArgs();
+		String sggKey = null;
+
+		if (applicationArgs != null && applicationArgs.length > 0) {
+
+			sggKey = applicationArgs[0];
+
+		} else {
+
+			LOG.error(SGG_KEY_MISSING);
+			int exitCode = SpringApplication.exit(applicationContext, () -> 13);
+			System.exit(exitCode);
+
+		}
+
+		return sggKey;
+
     }
 
     private static byte[] generateIv() {
@@ -99,5 +123,10 @@ public class CryptoUtil {
 
         return iv;
     }
+
+	@Override
+	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+		this.applicationContext = applicationContext;
+	}
 
 }
