@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
+import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -47,7 +48,25 @@ public class JwtUtil {
                 .signWith(Keys.hmacShaKeyFor(decodedSecretKey), SignatureAlgorithm.HS256).compact();
     }
 
-    public String extractUsername(String token) throws JwtException {
+	public String getUsernameFromAuthHeader(HttpServletRequest request, String authorizationHeader) {
+
+		if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+
+			String jwt = authorizationHeader.substring(7);
+
+			try {
+				return extractUsername(jwt);
+			} catch (JwtException e) {
+				request.setAttribute("jwtException", e);
+				throw e;
+			}
+
+		}
+
+		return null;
+	}
+
+    private String extractUsername(String token) throws JwtException {
         return extractClaim(token, Claims::getSubject);
     }
 

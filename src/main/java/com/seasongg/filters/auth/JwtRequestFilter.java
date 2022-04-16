@@ -1,7 +1,6 @@
 package com.seasongg.filters.auth;
 
 import com.seasongg.config.security.util.JwtUtil;
-import io.jsonwebtoken.JwtException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -22,44 +21,24 @@ import java.io.IOException;
 public class JwtRequestFilter extends OncePerRequestFilter {
 
     @Autowired
-    private UserDetailsService userDetailsService;
-
-    @Autowired
     private JwtUtil jwtUtil;
 
-    @Override
+	@Autowired
+	private SpringSecurityContextService springSecurityContextService;
+
+	@Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
         final String authorizationHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
 
-        String username = null;
+		String username = jwtUtil.getUsernameFromAuthHeader(request, authorizationHeader);
 
-        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+		if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
-            String jwt = authorizationHeader.substring(7);
+			springSecurityContextService.setSecurityContext(request, username);
 
-            try {
-                username = jwtUtil.extractUsername(jwt);
-            } catch (JwtException e) {
-                request.setAttribute("jwtException", e);
-                throw e;
-            }
-
-        }
-
-        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
-
-            UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                    userDetails, null, userDetails.getAuthorities()
-            );
-
-            authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-
-            SecurityContextHolder.getContext().setAuthentication(authToken);
-
-        }
+		}
 
         filterChain.doFilter(request, response);
 
