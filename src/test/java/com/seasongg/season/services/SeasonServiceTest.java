@@ -1,5 +1,6 @@
 package com.seasongg.season.services;
 
+import com.seasongg.season.models.Season;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.function.Executable;
@@ -9,8 +10,11 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigInteger;
+import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doReturn;
 
 @ExtendWith(MockitoExtension.class)
@@ -198,6 +202,42 @@ class SeasonServiceTest {
 
 		// when
 		Executable executable = () -> seasonService.validateGameId(nullGameId);
+
+		// then
+		assertThrows(SeasonService.SeasonException.class, executable);
+
+	}
+
+	@Test
+	void should_FindSeason_When_SeasonExists() throws SeasonService.SeasonException {
+		// given
+		BigInteger seasonId = BigInteger.valueOf(1);
+		Season expectedSeason = new Season();
+		expectedSeason.setSeasonId(seasonId);
+
+		given(seasonRepositoryMock.findById(BigInteger.valueOf(1))).willReturn(
+				Optional.of(expectedSeason)
+		);
+
+		// when
+		Season actualSeason = seasonService.findSeason(seasonId);
+
+		// then
+		assertEquals(expectedSeason, actualSeason);
+
+	}
+
+	@Test
+	void should_ThrowException_When_SeasonDoesNotExist() {
+		// given
+		BigInteger seasonId = BigInteger.valueOf(-1);
+
+		given(seasonRepositoryMock.findById(BigInteger.valueOf(-1))).willReturn(
+				Optional.empty()
+		);
+
+		// when
+		Executable executable = () -> seasonService.findSeason(seasonId);
 
 		// then
 		assertThrows(SeasonService.SeasonException.class, executable);
