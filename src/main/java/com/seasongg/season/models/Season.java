@@ -12,6 +12,7 @@ import org.hibernate.annotations.OrderBy;
 
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Table(name="season")
@@ -169,6 +170,28 @@ public class Season implements Serializable {
 
 	public void setStatus(String status) {
 		this.status = status;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		Season season = (Season) o;
+		return Objects.equals(seasonId, season.seasonId) &&
+				Objects.equals(endDate, season.endDate) &&
+				Objects.equals(name, season.name) &&
+				Objects.equals(startDate, season.startDate) &&
+				Objects.equals(scoringType, season.scoringType) &&
+				Objects.equals(rounds, season.rounds) &&
+				Objects.equals(game, season.game) &&
+				Objects.equals(seasonStandings, season.seasonStandings) &&
+				Objects.equals(creator, season.creator) &&
+				Objects.equals(status, season.status);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(seasonId, endDate, name, startDate, scoringType, rounds, game, seasonStandings, creator, status);
 	}
 
 }

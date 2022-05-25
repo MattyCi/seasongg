@@ -56,7 +56,7 @@ public class SeasonCreateService extends SeasonService {
             return new SeasonResponse(season);
     }
 
-    private Season buildSeason(SeasonCreateRequest seasonCreateRequest) throws Exception {
+    Season buildSeason(SeasonCreateRequest seasonCreateRequest) throws Exception {
 
         Optional<Game> bggGame = gameRepository.findById(seasonCreateRequest.getSeasonGameId());
 
@@ -107,7 +107,7 @@ public class SeasonCreateService extends SeasonService {
         return season;
     }
 
-    private void assignUserPermissionsForSeason(Season season) {
+    void assignUserPermissionsForSeason(Season season) {
 
         Permission permission = createPermission(season);
         associateUserToPermission(season, permission);
