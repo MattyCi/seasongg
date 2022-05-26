@@ -35,7 +35,7 @@ public class SeasonDeleteService extends SeasonService {
 
     }
 
-    private void deleteAllPermissionsForSeason(BigInteger seasonId) {
+    void deleteAllPermissionsForSeason(BigInteger seasonId) {
 
         List<Permission> allPermissionsForSeason = permissionRepository.getAllPermissionsForSeason(seasonId);
 
