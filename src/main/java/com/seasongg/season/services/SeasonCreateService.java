@@ -114,7 +114,7 @@ public class SeasonCreateService extends SeasonService {
 
     }
 
-    private Permission createPermission(Season season) {
+    Permission createPermission(Season season) {
         Permission permission;
         permission = new Permission();
         permission.setPermValue("season:*:"+season.getSeasonId());
@@ -122,7 +122,7 @@ public class SeasonCreateService extends SeasonService {
         return permission;
     }
 
-    private void associateUserToPermission(Season season, Permission permission) {
+    void associateUserToPermission(Season season, Permission permission) {
 
         LOG.debug("granting user {} admin rights for season {}.", getUsername(), season.getSeasonId());
 

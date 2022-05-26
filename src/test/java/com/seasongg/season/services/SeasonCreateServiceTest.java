@@ -7,7 +7,10 @@ import com.seasongg.game.services.GameRepository;
 import com.seasongg.season.models.Season;
 import com.seasongg.season.models.SeasonCreateRequest;
 import com.seasongg.user.models.Reguser;
+import com.seasongg.user.models.permissions.Permission;
+import com.seasongg.user.models.permissions.UserPermission;
 import com.seasongg.user.services.permissions.PermissionRepository;
+import com.seasongg.user.services.permissions.UserPermissionRepository;
 import org.hibernate.exception.ConstraintViolationException;
 import org.hibernate.exception.DataException;
 import org.hibernate.exception.LockTimeoutException;
@@ -47,6 +50,9 @@ class SeasonCreateServiceTest {
 
     @Mock
     PermissionRepository permissionRepository;
+
+	@Mock
+	UserPermissionRepository userPermissionRepository;
 
     @BeforeEach
     void setup() throws SggService.SggServiceException {
@@ -312,7 +318,6 @@ class SeasonCreateServiceTest {
     }
 
     @Test
-    // TODO: implement this
     void should_AssignUserPermissionsUponSeasonCreate() throws Exception {
         // given
         Optional<Game> emptyGame = Optional.empty();
@@ -328,13 +333,16 @@ class SeasonCreateServiceTest {
 
         given(gameCreationService.createGame(seasonCreateRequest)).willReturn(mock(Game.class));
 
-        doNothing().when(seasonCreateService).assignUserPermissionsForSeason(any(Season.class));
+        doReturn(mock(Permission.class)).when(permissionRepository).save(any(Permission.class));
+		doReturn(mock(UserPermission.class)).when(userPermissionRepository).save(any(UserPermission.class));
 
         // when
         seasonCreateService.buildSeason(seasonCreateRequest);
 
         // then
-        verify(gameCreationService).createGame(seasonCreateRequest);
+        verify(seasonCreateService).assignUserPermissionsForSeason(any(Season.class));
+		verify(seasonCreateService).createPermission(any(Season.class));
+		verify(seasonCreateService).associateUserToPermission(any(Season.class), any(Permission.class));
 
     }
 
