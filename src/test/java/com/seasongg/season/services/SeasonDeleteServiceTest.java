@@ -1,8 +1,6 @@
 package com.seasongg.season.services;
 
-import com.seasongg.game.models.Game;
 import com.seasongg.season.models.Season;
-import com.seasongg.season.models.SeasonCreateRequest;
 import com.seasongg.user.models.permissions.Permission;
 import com.seasongg.user.services.permissions.PermissionRepository;
 import org.junit.jupiter.api.Test;
@@ -14,8 +12,6 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -74,7 +70,7 @@ class SeasonDeleteServiceTest {
 	@Test
 	void should_DeletePermissions_When_SeasonDeleted() throws Exception {
 		// given
-		List<Permission> dummyPermissionsToDelete = Arrays.asList(new Permission());
+		List<Permission> dummyPermissionsToDelete = List.of(new Permission());
 
 		given(permissionRepository.getAllPermissionsForSeason(BigInteger.ONE)).willReturn(dummyPermissionsToDelete);
 
