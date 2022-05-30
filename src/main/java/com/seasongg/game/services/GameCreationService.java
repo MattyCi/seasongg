@@ -11,10 +11,12 @@ import org.springframework.stereotype.Service;
 @Service
 public class GameCreationService extends SggService {
 
-    @Autowired
-    private GameRepository gameRepository;
-
     private final Logger LOG = LoggerFactory.getLogger(GameCreationService.class);
+
+	public static final String GAME_NAME_EXISTS_ERROR_TEXT = "A game with that name already exist. Please use a " +
+			"different game name.";
+
+	public static final String GAME_NAME_CONSTRAINT = "games.GAME_NAME_UNIQUE";
 
     public Game createGame(SeasonCreateRequest seasonCreateRequest) {
 
@@ -22,8 +24,6 @@ public class GameCreationService extends SggService {
 
         bggGame.setGameId(seasonCreateRequest.getSeasonGameId());
         bggGame.setGameName(seasonCreateRequest.getSeasonGameName());
-
-        gameRepository.save(bggGame);
 
         return bggGame;
 

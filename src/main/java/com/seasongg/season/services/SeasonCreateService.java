@@ -25,7 +25,7 @@ import java.util.Optional;
 @Service
 public class SeasonCreateService extends SeasonService {
 
-    @Autowired
+	@Autowired
     GameRepository gameRepository;
 
     @Autowired
@@ -43,6 +43,8 @@ public class SeasonCreateService extends SeasonService {
 
     private static final String UNEXPECTED_GAME_ERROR = "Sorry, we had an issue finding the selected game. " +
             "Please try again.";
+
+	private static final String SEASON_NAME_CONSTRAINT = "season.NAME";
 
     @Transactional(rollbackFor = Exception.class)
     public SeasonResponse createSeason(SeasonCreateRequest seasonCreateRequest) throws Exception {
@@ -92,9 +94,8 @@ public class SeasonCreateService extends SeasonService {
         try {
             seasonRepository.save(season);
         } catch (Exception e) {
-            if (e.getCause() instanceof  ConstraintViolationException)
-                throw new SeasonException(SEASON_NAME_EXISTS_ERROR_TEXT);
-            throw e;
+			handleConstraintViolations(e);
+			throw e;
         }
 
         try {
@@ -107,7 +108,21 @@ public class SeasonCreateService extends SeasonService {
         return season;
     }
 
-    void assignUserPermissionsForSeason(Season season) {
+	private void handleConstraintViolations(Exception e) throws SeasonException {
+		if (e.getCause() instanceof  ConstraintViolationException) {
+
+			String constraintName = ((ConstraintViolationException) e.getCause()).getConstraintName();
+
+			if (constraintName.equals(GameCreationService.GAME_NAME_CONSTRAINT))
+				throw new SeasonException(GameCreationService.GAME_NAME_EXISTS_ERROR_TEXT);
+			else if (constraintName.equals(SEASON_NAME_CONSTRAINT)) {
+				throw new SeasonException(SEASON_NAME_EXISTS_ERROR_TEXT);
+			}
+
+		}
+	}
+
+	void assignUserPermissionsForSeason(Season season) {
 
         Permission permission = createPermission(season);
         associateUserToPermission(season, permission);

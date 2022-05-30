@@ -21,6 +21,7 @@ import org.junit.jupiter.api.function.Executable;
 import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Optional;
 
@@ -239,20 +240,47 @@ class SeasonCreateServiceTest {
                 "A"
         );
 
-        Exception testException = new RuntimeException("test", mock(ConstraintViolationException.class));
+		ConstraintViolationException exceptionCause = new ConstraintViolationException("Dummy message",
+				mock(SQLException.class), "season.NAME");
+        Exception testException = new RuntimeException("test", exceptionCause);
         doThrow(testException).when(seasonRepository).save(any(Season.class));
 
         // when
-        Exception exception = assertThrows(SeasonService.SeasonException.class, () -> {
-            seasonCreateService.buildSeason(seasonCreateRequest);
-        });
+        Exception exception = assertThrows(SeasonService.SeasonException.class, () ->
+				seasonCreateService.buildSeason(seasonCreateRequest));
 
         // then
         assertThat(exception.getMessage(), containsString("the season name you provided already exists"));
 
     }
 
-    @Test
+	@Test
+	void should_ThrowException_When_GameNameAlreadyExists() {
+		// given
+		given(gameRepository.findById(1)).willReturn(Optional.of(new Game()));
+		SeasonCreateRequest seasonCreateRequest = new SeasonCreateRequest(
+				"season-name",
+				1,
+				"game-name",
+				"01/01/3000",
+				"A"
+		);
+
+		ConstraintViolationException exceptionCause = new ConstraintViolationException("Dummy message",
+				mock(SQLException.class), "games.GAME_NAME_UNIQUE");
+		Exception testException = new RuntimeException("test", exceptionCause);
+		doThrow(testException).when(seasonRepository).save(any(Season.class));
+
+		// when
+		Exception exception = assertThrows(SeasonService.SeasonException.class, () ->
+				seasonCreateService.buildSeason(seasonCreateRequest));
+
+		// then
+		assertThat(exception.getMessage(), containsString("game with that name already exist"));
+
+	}
+
+	@Test
     void should_ThrowException_When_UnexpectedPersistenceErrorOccurs() {
         // given
         given(gameRepository.findById(1)).willReturn(Optional.of(new Game()));

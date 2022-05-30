@@ -19,17 +19,12 @@ class GameCreationServiceTest {
 	@InjectMocks
 	private GameCreationService gameCreationService;
 
-	@Mock
-	private GameRepository gameRepository;
-
 	@Test
 	public void should_CreateGame_When_InputOK() {
 		// given
 		SeasonCreateRequest seasonCreateRequest = new SeasonCreateRequest();
 		seasonCreateRequest.setSeasonGameId(1);
 		seasonCreateRequest.setSeasonGameName("Test Game");
-
-		given(gameRepository.save(any(Game.class))).willReturn(mock(Game.class));
 
 		Game expectedGame = new Game();
 		expectedGame.setGameId(1);
@@ -40,23 +35,6 @@ class GameCreationServiceTest {
 
 		//then
 		assertEquals(expectedGame, actualGame);
-
-	}
-
-	@Test
-	public void should_PersistGameOnce() {
-		// given
-		SeasonCreateRequest seasonCreateRequest = new SeasonCreateRequest();
-		seasonCreateRequest.setSeasonGameId(1);
-		seasonCreateRequest.setSeasonGameName("Test Game");
-
-		given(gameRepository.save(any(Game.class))).willReturn(mock(Game.class));
-
-		// when
-		Game actualGame = gameCreationService.createGame(seasonCreateRequest);
-
-		//then
-		verify(gameRepository).save(any(Game.class));
 
 	}
 
