@@ -43,7 +43,7 @@ public class SeasonEditService extends SeasonService {
 
     }
 
-    private void changeSeasonEndDate(Season seasonToEdit, String endDate) throws SeasonException {
+    void changeSeasonEndDate(Season seasonToEdit, String endDate) throws SeasonException {
 
         validateSeasonDates(endDate, true);
         seasonToEdit.setEndDate(getTimestamp(endDate));
@@ -51,7 +51,7 @@ public class SeasonEditService extends SeasonService {
 
     }
 
-    private void adjustSeasonStatusIfNeeded(Season seasonToEdit) {
+    void adjustSeasonStatusIfNeeded(Season seasonToEdit) {
 
         Timestamp currentTime = new Timestamp(System.currentTimeMillis());
         if (seasonToEdit.getEndDate().before(currentTime)) {
@@ -62,7 +62,7 @@ public class SeasonEditService extends SeasonService {
 
     }
 
-    private void changeSeasonName(SeasonEditRequest seasonEditRequest, Season seasonToEdit) throws SeasonException {
+    void changeSeasonName(SeasonEditRequest seasonEditRequest, Season seasonToEdit) throws SeasonException {
 
         validateSeasonName(seasonEditRequest.getSeasonName());
 

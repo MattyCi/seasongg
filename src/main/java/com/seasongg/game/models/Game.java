@@ -6,6 +6,7 @@ import com.seasongg.season.models.Season;
 import java.io.Serializable;
 import javax.persistence.*;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Table(name="games")
@@ -66,4 +67,16 @@ public class Game implements Serializable {
 		return season;
 	}
 
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		Game game = (Game) o;
+		return gameId == game.gameId && Objects.equals(gameName, game.gameName) && Objects.equals(seasons, game.seasons);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(gameId, gameName, seasons);
+	}
 }
